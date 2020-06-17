@@ -39,7 +39,7 @@ class YouTubeCL(object):
             # The maxResults parameter specifies the maximum number of items
             # that should be returned in the result set
             maxResults=40,
-            mine=True  # ?
+            mine=True
         )
 
         response = request.execute()
@@ -48,3 +48,14 @@ class YouTubeCL(object):
         # the 'snippet' (what contains details about the playlist) and 'title (the title)
         playlists = [playlist(item['id'], item['snippet']['title'])
                      for item in response['items']]
+
+        return playlists
+
+    def get_vids(self, playlist_id):
+        request = self.youtube.playlistItems().list(
+            playlistID=playlist_id,
+            part="id, snippet",
+            maxResults=40
+        )
+
+        response = request.execute()
