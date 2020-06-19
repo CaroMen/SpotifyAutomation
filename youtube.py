@@ -2,7 +2,7 @@ import os
 
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
-import googleapiclient.errors
+import youtube_dl
 
 
 class playlist(object):
@@ -31,6 +31,7 @@ class YouTubeCL(object):
 
         self.youtube = youtube
 
+    # Step One: Get the playlists from user
     def get_playlists(self):
         request = self.youtube.playlists().list(
             # The part parameter specifies a comma-separated list of one or more
@@ -51,11 +52,26 @@ class YouTubeCL(object):
 
         return playlists
 
+    # Step Two: Get the names of artists and tracks from playlist
     def get_vids(self, playlist_id):
-        request = self.youtube.playlistItems().list(
+        songs = []
+        video_request = self.youtube.playlistItems().list(
             playlistID=playlist_id,
             part="id, snippet",
             maxResults=40
         )
 
-        response = request.execute()
+        response = video_request.execute()
+
+        for item in response['items']:
+            video_id = item['snippet']['resourceId']['videoId']
+            artist = self.get_vids(video_id)
+            track = self.get_vids(video_id)
+
+            if artist and track:
+                songs.append(Song(artist, track))
+
+            return songs
+
+    def get_music(self, video_id):
+        pass
