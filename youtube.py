@@ -11,6 +11,12 @@ class playlist(object):
         self.title = title
 
 
+class song(object):
+    def __init__(self, artist, track):
+        self.artist = artist
+        self.track = track
+
+
 class YouTubeCL(object):
     def __init__(self, creds_location):
         scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
@@ -74,4 +80,12 @@ class YouTubeCL(object):
             return songs
 
     def get_music(self, video_id):
-        pass
+        youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+
+        video = youtube_dl.YoutubeDL({'quiet': True}).extract_info(
+            youtube_url, download=False)
+
+        artist = video['artist']
+        track = video['track']
+
+        return artist, track
